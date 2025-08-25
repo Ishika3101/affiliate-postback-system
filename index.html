@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Affiliate Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>Affiliate Dashboard</h1>
+
+  <h2>Clicks</h2>
+  <table id="clicks-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Affiliate ID</th>
+        <th>Campaign ID</th>
+        <th>Click ID</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Conversions</h2>
+  <table id="conversions-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Click ID</th>
+        <th>Amount</th>
+        <th>Currency</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchData(url) {
+      const response = await fetch(url);
+      return await response.json();
+    }
+
+    async function loadDashboard() {
+      try {
+        // Fetch clicks data
+        const clicksResponse = await fetch('http://localhost:3000/api/clicks');
+        const clicks = await clicksResponse.json();
+
+        // Fetch conversions data
+        const conversionsResponse = await fetch('http://localhost:3000/api/conversions');
+        const conversions = await conversionsResponse.json();
+
+        // Populate clicks table
+        const clicksTableBody = document.querySelector('#clicks-table tbody');
+        clicksTableBody.innerHTML = '';
+        clicks.forEach(click => {
+          clicksTableBody.innerHTML += `
+            <tr>
+              <td>${click.id}</td>
+              <td>${click.affiliate_id}</td>
+              <td>${click.campaign_id}</td>
+              <td>${click.click_id}</td>
+              <td>${new Date(click.timestamp).toLocaleString()}</td>
+            </tr>
+          `;
+        });
+
+        // Populate conversions table
+        const conversionsTableBody = document.querySelector('#conversions-table tbody');
+        conversionsTableBody.innerHTML = '';
+        conversions.forEach(conv => {
+          conversionsTableBody.innerHTML += `
+            <tr>
+              <td>${conv.id}</td>
+              <td>${conv.click_id}</td>
+              <td>${conv.amount}</td>
+              <td>${conv.currency}</td>
+              <td>${new Date(conv.timestamp).toLocaleString()}</td>
+            </tr>
+          `;
+        });
+
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
